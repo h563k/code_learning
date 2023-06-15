@@ -105,6 +105,13 @@ class Solution:
             print('电梯', self.passenger, '排队', passengers, '起点', begin, '终点', final, '行程', self.count)
         return self.count
 
+init_floor = 50
+passengers = [
+    [50, 10],
+    [40, 20],
+    [30, 100],
+    [30, 100],
+]
 
-
-
+sol = Solution()
+sol.cal_distance(init_floor, passengers)
