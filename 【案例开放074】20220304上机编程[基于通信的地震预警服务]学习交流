@@ -75,3 +75,54 @@ mapSideLen 是 gridSideLen 的整数倍
 提示样例 2
 没有符合条件的栅格，输出空序列
 提示：点P1位置(x1,y1)与点P2坐标(x2,y2)曼哈顿距离=|x1-x2|+|y1-y2|
+from leetcode import *
+from collections import defaultdict
+class Solution:
+    def __init__(self):
+        self.grid_dict = defaultdict(list)
+        self.grid_num = {}
+
+    def warm_up(self, mapside_len: int, gridside_len: int, user_array: List[List[int]],
+                half_gridside_len: int):
+        n = mapside_len // gridside_len
+        for i in range(n):
+            for j in range(n):
+                # 接下来把用户塞进去
+                center = (gridside_len * i + half_gridside_len, gridside_len * j + half_gridside_len)
+                temp = []
+                for user in user_array:
+                    if abs(user[0] - center[0]) <= half_gridside_len and abs(user[1] - center[1]) <= half_gridside_len:
+                        self.grid_dict[center].append(user)
+                    else:
+                        temp.append(user)
+                user_array = temp
+                self.grid_num[center] = i * n + j + 1
+
+    def get_notification_order(self, mapside_len: int, gridside_len: int, radius: int, earthquake_row: int,
+                               earthquake_col: int, user_array: List[List[int]]) -> List[int]:
+        # 栅格半长
+        half_gridside_len = (gridside_len - 1) // 2
+        self.warm_up(mapside_len, gridside_len, user_array, half_gridside_len)
+        # 确定通知范围
+        note_grid = {}
+        for center in self.grid_dict.keys():
+            lens = abs(earthquake_row - center[0]) + abs(earthquake_col - center[1])
+            if lens <= radius and len(self.grid_dict[tuple(center)]):
+                note_grid[center] = lens
+        if note_grid:
+            final_list = []
+            for center in self.grid_dict:
+                # 距离，用户数，编号
+                final_list.append([note_grid[center], len(self.grid_dict[center]), self.grid_num[center]])
+            final_list.sort()
+            return [x[-1] for x in final_list]
+        else:
+            return []
+mapside_len, gridside_len, radius = 9, 3, 6
+earthquake_row, earthquake_col = 3, 2
+user_array = [[3, 5], [7, 4], [6, 5], [5, 7], [2, 5], [5, 7]]
+mapside_len, gridside_len, radius = 3,1,3
+earthquake_row, earthquake_col = 0,0
+user_array = [[2,2]]
+sol = Solution()
+sol.get_notification_order(mapside_len, gridside_len, radius, earthquake_row, earthquake_col, user_array)
