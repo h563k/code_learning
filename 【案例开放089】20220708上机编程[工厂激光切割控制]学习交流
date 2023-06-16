@@ -65,3 +65,83 @@ distances = [1,2,1,2,1,1,1,1,1,1]
 ·         operations[i] 仅为 'O'、'C'、'U'、'D'、'L'、'R'、'M'
 
 ·         一条边可能会被多次切割
+
+from typing import List
+class Solution:
+    def __init__(self):
+        self.direction = 'D'  # 初始刀头方向
+        self.status = 0  # 初始状态
+        self.dir_dict = {
+            'U': [0, -1],
+            'D': [0, 1],
+            'L': [-1, 0],
+            'R': [1, 0],
+        }
+        self.distances = []
+        self.count = 0
+        # 额外增加一个切割边记录
+        self.cut = []
+
+    def get_unit_block_num(self, height: int, width: int, operations: str, distances: List[int]) -> int:
+        self.distances = [[1] * (width + 1) for _ in range(height + 1)]
+        row, col = 0, 0
+        temp = 0
+        # 默认全部边都切割了
+        for i in range(height):
+            self.cut.append([[0, i], [0, i + 1]])
+            self.cut.append([[width, i], [width, i + 1]])
+        for i in range(width):
+            self.cut.append(([i, 0], [i + 1, 0]))
+            self.cut.append(([i, height], [i + 1, height]))
+        for num, operation in enumerate(operations):
+            # 转向
+            if operation in ['U', 'D', 'L', 'R']:
+                self.direction = operation
+            if operation == 'O':
+                self.status = 1
+                # 立即切割当前点
+                self.distances[row][col] = 0
+            if operation == 'C':
+                self.status = 0
+            # 移动
+            if operation == 'M':
+                # 确定当前移动方向
+                dir_col, dir_row = self.dir_dict[self.direction]
+                distance = distances[temp]
+                temp += 1
+                for _ in range(distance):
+                    temp_row, temp_col = row, col
+                    row += dir_row
+                    col += dir_col
+                    if self.status:
+                        self.distances[row][col] = 0
+                        temp_location = [[temp_row, temp_col], [row, col]]
+                        temp_location.sort()
+                        self.cut.append(temp_location)
+        for row in range(height):
+            for col in range(width):
+                if self.distances[row][col] == self.distances[row + 1][col] == self.distances[row][col + 1] == \
+                        self.distances[row + 1][col + 1] == 0:
+                    if [[row, col], [row + 1, col]] in self.cut and [[row, col], [row, col + 1]] in self.cut and [
+                        [row + 1, col], [row + 1, col + 1]] in self.cut and [[row, col + 1],
+                                                                             [row + 1, col + 1]] in self.cut:
+                        self.count += 1
+        return self.count
+
+height = 3
+width = 4
+operations = "MRMOMDMLMUMCRMODMC"
+distances = [1, 1, 2, 1, 2, 2, 1, 2]
+
+height = 3
+width = 4
+operations = "MRMOMDMLMUMC"
+distances = [1,1,2,1,2,2]
+
+height = 3
+width = 3
+operations = "MROMDMLMUMRMDMRMUMLMC"
+distances = [1,2,1,2,1,1,1,1,1,1]
+
+sol = Solution()
+sol.get_unit_block_num(height, width, operations, distances)
