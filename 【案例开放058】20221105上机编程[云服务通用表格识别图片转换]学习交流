@@ -1,0 +1,165 @@
+学习1105专业级第二题。题目：
+
+
+题目描述
+
+华为云推出了“通用表格识别”服务，可以将图片表格转换成文本数据。请你把文本数据进一步转换为「文本型表格」，
+如下图所示：
+
+
+现给出一个图片表格的文本数据：
+·         每行数据形如 line3 col1 A，表示第3行第1列的单元格的内容为 A
+·         表格的行和列都从 1 开始；文本数据中行、列的最大值分别为表格的行、列数。
+·         内容为由英文字符A-Z组成的字符串，或为空；未描述的单元格内容为空。
+
+请按如下格式要求，将文本数据转换成「文本型表格」：
+·         表格第一行和最后一行用字母+和字母-组成，+代表单元格的间隔，-代表一个字符的占位符；
+·         数据行：
+·         用字符|标识单元格的左右边界。
+·         某一列的宽度是该列中所有单元格最长内容长度 + 2（即左右各补充 1个空格），该列中内容不足该宽度的用空格补充。
+·         表格中单元格的内容要求居中对齐，对齐要求：
+1）尽量使得文本左右两侧的空格数量相等。
+2）如果文本左右两侧的空格数量无法相等，则左侧比右侧少一个，如图中内容为 CN 的单元格。
+
+输入
+第一行一个整数 num，表示文本数据的行数，范围 [1,20]。
+接下来 num 行字符串，每行格式如line2 col3 LMN描述一个单元格：
+·         line 是行的固定前缀，行取值范围 [1,100]
+·         col 是列的固定前缀，列取值范围 [1,100]
+·         内容为仅由英文字符A-Z组成的字符串，或为空，长度范围 [0,10]。
+
+输出
+
+字符串表示的「文本型表格」
+样例
+输入样例 1
+
+8
+line1 col3 CN
+line1 col1 A
+line1 col4 D
+line3 col1 X
+line2 col1
+line2 col2 BE
+line2 col3 LMN
+line2 col4
+
+输出样例 1
+
++---+----+-----+---+
+
+| A |    | CN  | D |
+
+|   | BE | LMN |   |
+
+| X |    |     |   |
+
++---+----+-----+---+
+
+提示样例 1
+
+表格的行列数：
+1）输入数据最大行为3，因此行数为 3 。
+2）输入数据最大列为4，因此列数为 4 。
+
+表格的各列宽度：
+
+·         第1列：内容最长为1，加2，该列宽度为3 。
+·         第2列：内容最长为2，加2，该列宽度为4 。
+·         第3列：内容最长为3，加2，该列宽度为5 。该列中内容LMN最长，左右各补充一个空格；CN左侧补充一个空格，右侧补充两个空格。
+·         第4列：内容最长为1，加2，该列宽度为3 。
+
+
+
+
+输入样例 2
+
+2
+
+line2 col2 A
+line2 col3
+
+输出样例 2
+
++--+---+--+
+|  |   |  |
+|  | A |  |
++--+---+--+
+
+提示样例 2
+
+·         从输入得到数据的行列数分别为2和3；第一行、第一列、第三列即使内容为空，也需要输出。
+
+其中第一列内容都为空，列宽度为2（该列中所有单元格最长内容长度 +2）。
+result = [['8'],
+          ['line1', 'col3', 'CN'],
+          ['line1', 'col1', 'A'],
+          ['line1', 'col4', 'D'],
+          ['line3', 'col1', 'X'],
+          ['line2', 'col1', ' '],
+          ['line2', 'col2', 'BE'],
+          ['line2', 'col3', 'LMN'],
+          ['line2', 'col4', '']]
+
+from leetcode import *
+
+
+class Solution:
+    def __init__(self):
+        self.temp = []
+        self.max_line = 0
+        self.max_col = 0
+        self.amount = {}
+
+    # 确定表格大小，初步处理
+    def table_scale(self, sheetInfo: List):
+        datas = sheetInfo[1:]
+        for data in datas:
+            line, col, word = data
+            line = int(line[4:])
+            col = int(col[3:])
+            self.max_line = max(self.max_line, line)
+            self.max_col = max(self.max_col, col)
+            self.temp.append([line, col, word])
+            if col not in self.amount.keys():
+                self.amount[col] = len(word) + 2
+            else:
+                self.amount[col] = max(len(word) + 2, self.amount[col])
+
+        # 进一步的，我们需要知道每个表的宽是多少
+        self.temp.sort(key=lambda x: (x[0], x[1]))
+
+    def center(self, lens: int, string: str):
+        if (lens - len(string)) % 2 == 0:
+            return string.center(lens, " ")
+        else:
+            return string.center(lens - 1, " ") + " "
+
+    def TransformTable(self, sheetInfo: List):
+        self.table_scale(sheetInfo)
+        tabel_line = []
+        for i in range(self.max_col):
+            tabel_line.append("".join(['-'] * self.amount[i + 1]))
+        # 构造字典
+        content = {}
+        for x in self.temp:
+            content[tuple([x[0], x[1]])] = x[2]
+        # 填表
+        tabel_content = []
+        for line in range(1, self.max_line + 1):
+            temp = []
+            for col in range(1, self.max_col + 1):
+                if tuple([line, col]) in content.keys():
+                    temp.append(self.center(self.amount[col], content[tuple([line, col])]))
+                else:
+                    temp.append(" " * self.amount[col])
+            temp = "|" + "|".join(temp) + "|"
+            tabel_content.append(temp)
+
+        tabel_line = "+" + "+".join(tabel_line) + "+"
+        print(tabel_line)
+        for line in tabel_content:
+            print(line)
+        print(tabel_line)
+sol = Solution()
+sol.TransformTable(result)
