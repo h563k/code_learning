@@ -1,0 +1,76 @@
+终端某产品的车间工人位置分布视作一个矩阵，记为二维数组 scores，scores[row][col] 代表此位置工人的 11 月的完成件数。
+每位工人都想计算同行同列中一共有多少人比自己完成的件数多，最后把计算结果记录在一个新的二维数组的对应位置上，并返回该二维数组。
+
+示例 1：
+
+输入：scores = [[10,20],[30,10]]
+输出：[[2,0],[0,2]]
+
+解释：
+<img src="data:image/png;base64,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" >
+与 scores[0][0] 同行的元素中 scores[0][1] 比它大，与 scores[0][0] 同列的元素中 scores[1][0]比它大，同行同列合计2个人；
+与 scores[0][1] 同行同列的两个元素都不比它大；
+与 scores[1][0] 同行同列的两个元素都不比它大；
+与 scores[1][1] 同行同列的两个元素都比它大。
+注：返回的数组和 scores 的行、列数相等。
+
+示例 2：
+
+输入：scores = [[10,20,30],[30,15,10]]
+输出：[[3,1,0],[0,2,3]]
+
+解释：
+
+与 scores[0][0] 同行同列的三个元素都比它大；
+与 scores[0][1] 同行同列的三个元素中 score[0][2] 比它大；
+与 scores[0][2] 同行同列的三个元素都不比它大；
+与 scores[1][0] 同行同列的三个元素都不比它大；
+与 scores[1][1] 同行同列的三个元素中 score[1][0]、score[0][1] 比它大；
+与 scores[1][2] 同行同列的三个元素都比它大；
+
+提示：
+
+1 <= scores.length, scores[row].length <= 500
+0 <= scores[row][col] <= 10^4
+请注意，该题有性能要求，暴力解法的用例通过率不高
+
+from leetcode import *
+
+class Solution:
+    def __init__(self):
+        self.matrix_col = []
+        self.matrix_row = []
+
+    @staticmethod
+    def sort_list(list_sort: List[int]):
+        template = sorted(list_sort)
+        template = {x: y for y, x in enumerate(template)}
+        return [template[x] for x in list_sort]
+
+    def cmp_scores(self, scores: List[List[int]]) -> List[List[int]]:
+        len_row = len(scores)
+        len_col = len(scores[0])
+        temp = [[] for _ in range(len_col)]
+        result = [[0] * len_col for _ in range(len_row)]
+        for row in scores:
+            self.matrix_row.append(self.sort_list(row))
+            for num, i in enumerate(row):
+                temp[num].append(i)
+
+        for col in temp:
+            self.matrix_col.append(self.sort_list(col))
+
+        for row in range(len_row):
+            for col in range(len_col):
+                count = len_row - self.matrix_row[row][col] + len_col - self.matrix_col[col][row]
+                result[row][col] = count - 2
+        return result
+ from random import randint
+
+scores = [[0] * 100 for _ in range(100)]
+for row in range(len(scores)):
+    for col in range(len(scores[0])):
+        scores[row][col] = randint(0,1000)
+sol = Solution()
+sol.cmp_scores(scores)
+
