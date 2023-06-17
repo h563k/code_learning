@@ -3,7 +3,7 @@
 - 不收录任何最新题目
   
 ### 其他推荐的题目
-- 1247. 【软件认证】覆盖坐标点涉及知识点
+- 覆盖坐标点涉及知识点
   1. [前缀和与二维前缀和](https://zhuanlan.zhihu.com/p/436526162)
   2. [一维差分](https://zhuanlan.zhihu.com/p/438781582)
   3. [二维差分](https://zhuanlan.zhihu.com/p/439268614)
