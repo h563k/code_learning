@@ -1,6 +1,7 @@
 # 自己添加
 .vscode
 test.*
+.idea
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
